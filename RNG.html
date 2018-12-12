@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Sample Selector</title>
+
+  <script lang="text/javascript" src="https://combinatronics.com/SheetJS/js-xlsx/master/dist/xlsx.full.min.js" id="xlsxScript"></script>
+
+  <script>
+  function sampleSize(){
+    let populationSize = document.forms["samplingTool"]["population"].value;
+    let confidence = document.forms["samplingTool"]["confidence"].value / 100;
+    let deviation = document.forms["samplingTool"]["deviation"].value / 100;
+
+    console.log("Formula from https://www.qualitymag.com/articles/91991-sample-sizes-how-many-do-i-need");
+    let sampleSize = Math.round((Math.log(1 - confidence) / Math.log(1 - deviation)) + 0.5);
+    sampleSize = Math.round(sampleSize / (1 + ((sampleSize - 1) / populationSize)) + 0.5);
+
+    // Error Checks
+    if(populationSize < sampleSize) {
+      sampleSize = populationSize;
+    };
+
+    if(populationSize == 0 || confidence == 0|| deviation == 0) {
+      sampleSize = 0;
+    };
+
+    // Set form value
+    document.forms["samplingTool"]["sample"].value = sampleSize;
+  };
+
+  function randomSamples(){
+    /** Spinner **/
+    var spinner;
+
+    var _workstart = function() { spinner = new Spinner().spin(_target); }
+    var _workend = function() { spinner.stop(); }
+
+    /** Alerts **/
+    var _badfile = function() {
+      alertify.alert('This file does not appear to be a valid Excel file.  If we made a mistake, please send this file to <a href="mailto:dev@sheetjs.com?subject=I+broke+your+stuff">dev@sheetjs.com</a> so we can take a look.', function(){});
+    };
+
+    var _failed = function(e) {
+      console.log(e, e.stack);
+      alertify.alert('We unfortunately dropped the ball here.' +
+      'If there are issues with the file processor, please send this file to <a href="mailto:dschweyer@cottoncpa.com?subject=I+broke+your+stuff">Dom</a> so he can make things right.', function(){});
+    };
+
+    if (document.forms["samplingTool"]["sample"].value == 0) {
+      alert("Make sure that all fields are filled out properly.")
+      return;
+    };
+
+    /** File Upload **/
+    let externalScript = document.getElementById('xlsxScript');
+    if (externalScript != null) {
+      console.log("External XLSX Script Loaded");
+      document.getElementById('uploader').disabled = true;
+      var externalXlsxLoaded = true;
+    };
+
+    /** Sample Generation **/
+    let sampleSize =   document.forms["samplingTool"]["sample"].value;
+    let sampleTable = document.getElementById("sampleTable");
+    let populationSize = document.forms["samplingTool"]["population"].value;
+
+    console.log("Clear table with " + sampleTable.rows.length + " rows");
+    while (sampleTable.rows.length > 1) {
+      sampleTable.deleteRow(1);
+    }
+
+    console.log("Build table with " + sampleSize + " rows.");
+    var i;
+    var numbers = new Array();
+    for (i = 1; i <= sampleSize; i++) {
+      let randNum = Math.round(Math.random() * populationSize);
+      while(numbers.includes(randNum) || randNum == 0) {
+        randNum = Math.round(Math.random() * populationSize);
+      }
+      numbers.push(randNum);
+    }
+    numbers.sort(function(a, b){return b - a});
+
+    numbers.forEach(function(value) {
+      let row = sampleTable.insertRow(1);
+      let cell = row.insertCell(0);
+      cell.innerHTML = value;
+    });
+    numbers.sort(function(a, b){return a - b});
+    console.log(numbers);
+
+
+    //if there are no scripts that match, the load it
+    if (!externalXlsxLoaded) {
+      exportToCsv("Sample.csv", numbers);
+    } else {
+      var rABS = true; // true: readAsBinaryString ; false: readAsArrayBuffer
+      function handleFile(e) {
+        var files = e.target.files, f = files[0];
+        var reader = new FileReader();
+        reader.onload = function(e) {
+          var data = e.target.result;
+          if(!rABS) data = new Uint8Array(data);
+          var workbook = XLSX.read(data, {type: rABS ? 'binary' : 'array'});
+          console.log("Might be working");
+          /* DO SOMETHING WITH workbook HERE */
+        };
+        if(rABS) reader.readAsBinaryString(f); else reader.readAsArrayBuffer(f);
+      }
+      input_dom_element.addEventListener('change', handleFile, false);
+    }
+
+
+  };
+
+  function exportToCsv(filename, rows) {
+    var processRow = function (row) {
+      var finalVal = '';
+      if (typeof row == "number") {
+        var result = '"' + row + '"';
+      } else {
+        for (var j = 0; j <= row.length; j++) {
+          var innerValue = row[j] === null ? '' : row[j].toString();
+          if (row[j] instanceof Date) {
+            innerValue = row[j].toLocaleString();
+          };
+          var result = innerValue.replace(/"/g, '""');
+          if (result.search(/("|,|\n)/g) >= 0)
+          result = '"' + result + '"';
+          if (j > 0)
+          finalVal += ',';
+        }
+      }
+      finalVal += result;
+      return finalVal + '\n';
+    };
+
+    var csvFile = '"Sample", Insert Values Here\n';
+    for (var i = 0; i < rows.length; i++) {
+      csvFile += processRow(rows[i]);
+    }
+    console.log(csvFile);
+
+
+    var blob = new Blob([csvFile], { type: 'text/csv;charset=utf-8;' });
+    if (navigator.msSaveBlob) { // IE 10+
+      navigator.msSaveBlob(blob, filename);
+    } else {
+      var link = document.createElement("a");
+      if (link.download !== undefined) { // feature detection
+        // Browsers that support HTML5 download attribute
+        var url = URL.createObjectURL(blob);
+        link.setAttribute("href", url);
+        link.setAttribute("download", filename);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+    }
+
+  };
+  </script>
+
+  <style>
+  input:required:invalid, input:focus:invalid {
+    background-color: red;
+    color: white;
+  }
+  input:required:valid {
+    background-color: green;
+    color: white;
+  }
+
+  input {
+    font-weight: bold;
+  }
+
+  table {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+  }
+
+  td, th {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+  }
+
+  tr:nth-child(even) {
+    background-color: #dddddd;
+  }
+</style>
+
+</head>
+<body>
+  <h1>Sample Selector</h1>
+  <p>This tool will determine the appropriate sample size for you based on the population, and then will
+    provide you with a file of that sample. This uses the <a href="https://www.qualitymag.com/articles/91991-sample-sizes-how-many-do-i-need">Zero Defect Sampling</a> methodology.</p>
+    <br>
+
+    <h2>Parameters</h2>
+    <form name="samplingTool" id="samplingTool" autocomplete="off" onchange="sampleSize()">
+      <label for="population">Population Size:</label>
+      <input type="number" name="population" id="population" placeholder="Total Population Size" onclick="sampleSize()"required value="10">
+      <br>
+      <label for="confidence">Confidence:</label>
+      <input type="number" name="confidence" id="confidence" value="90" required min="75" max="99">
+      <br>
+      <label for="deviation">Tolerable Deviation Rate:</label>
+      <input type="number" name="deviation" id="deviation" value="5" required min="1" max="25">
+      <br>
+      <label for="sample">Sample Size:</label>
+      <input type="number" name="sample" id="sample" placeholder="Sample Size" readonly>
+      <br>
+      <input type="file" name="uploader" value="Upload Population (Optional)">
+      <input type="button" value="Generate" onclick="sampleSize();randomSamples()">
+    </form>
+    <br>
+
+    <h2>List of Samples</h2>
+    <table id="sampleTable">
+      <tr>
+        <th>Sample Number</th>
+      </tr>
+    </table>
+  </body>
+  </html>

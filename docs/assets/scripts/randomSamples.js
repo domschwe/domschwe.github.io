@@ -13,10 +13,9 @@ function randomSamples(){
   var i;
   var numbers = new Array();
   for (i = 1; i <= sampleSize; i++) {
-    let randNum = Math.round(Math.random() * populationSize);
-    while(numbers.includes(randNum) || randNum == 0) {
-      randNum = Math.round(Math.random() * populationSize);
-    }
+     do {
+      var randNum = Math.round(Math.random() * populationSize);
+    }while(numbers.includes(randNum) || randNum == 0)
     numbers.push(randNum);
   }
   numbers.sort(function(a, b){return b - a});

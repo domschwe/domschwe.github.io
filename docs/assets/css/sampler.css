@@ -1,3 +1,7 @@
+body {
+    margin: 10%;
+}
+
 .subtitle {
   font-style: italic;
   font-weight: lighter;
@@ -11,7 +15,7 @@
 .tool {
   display: flex;
   flex-direction: column;
-  width: 400px;
+  width: 450px;
   border-right: 6px solid black;
   margin-right: 10px;
   padding-right: 10px;
@@ -19,6 +23,7 @@
 
 .explanation {
   display: flex;
+    width: 600px;
   flex-direction: column;
 }
 
@@ -34,8 +39,6 @@ input:required:valid {
 input {
   font-weight: bold;
 }
-
-input[type=="number"]
 
 table {
   font-family: arial, sans-serif;
@@ -67,3 +70,22 @@ tr:nth-child(even) {
   width: 0;
   height: 0;
 }
+.page-break {
+    page-break-after: always;
+    page-break-inside: avoid;
+    clear:both;
+}
+.page-break-before {
+    page-break-before: always;
+    page-break-inside: avoid;
+    clear:both;
+}
+#html-2-pdfwrapper{
+    position: absolute;
+    left: 20px;
+    top: 50px;
+    bottom: 0;
+    overflow: auto;
+    width: 600px;
+}
+

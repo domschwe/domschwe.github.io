@@ -12,7 +12,7 @@ function sampleSize(){
     sampleSize = populationSize;
   };
 
-  if(populationSize == 0 || confidence == 0|| deviation == 0) {
+  if(populationSize == 0 || confidence == 0 || deviation == 0 || confidence > 100|| deviation > 100) {
     sampleSize = 0;
   };
 

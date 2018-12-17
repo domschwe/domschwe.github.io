@@ -1,71 +1,106 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Sample Selector</title>
+    <meta charset="UTF-8">
+    <title>Sample Selector</title>
+    <script src="assets/scripts/jquery-3.3.1.min.js"></script>
+    <script lang="text/javascript" src="https://combinatronics.com/SheetJS/js-xlsx/master/dist/xlsx.full.min.js" id="xlsxScript"></script>
+    <script lang="text/javascript" src="assets/scripts/sampleSize.js"></script>
+    <script lang="text/javascript" src="assets/scripts/numberInput.js"></script>
+    <script lang="text/javascript" src="assets/scripts/exportToCsv.js"></script>
+    <script lang="text/javascript" src="assets/scripts/randomSamples.js"></script>
+    <script lang="text/javascript" src="assets/scripts/toggleSwitch.js"></script>
+    <script lang="text/javascript" src="assets/scripts/jspdf.min.js"></script>
+    <script type="text/javascript"
+            src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+    </script>
+    <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    jax: ["input/TeX","output/HTML-CSS"],
+    displayAlign: "left"
+});
+</script>
 
-  <script src="assets/scripts/jquery-3.3.1.min.js"></script>
-  <script lang="text/javascript" src="https://combinatronics.com/SheetJS/js-xlsx/master/dist/xlsx.full.min.js" id="xlsxScript"></script>
-  <script lang="text/javascript" src="assets/scripts/sampleSize.js"></script>
-  <script lang="text/javascript" src="assets/scripts/numberInput.js"></script>
-  <script lang="text/javascript" src="assets/scripts/exportToCsv.js"></script>
-  <script lang="text/javascript" src="assets/scripts/randomSamples.js"></script>
-  <script lang="text/javascript" src="assets/scripts/toggleSwitch.js"></script>
+    <link rel="stylesheet" type="text/css" href="assets/css/uswds.min.css">
+    <link rel="stylesheet" type="text/css" href="assets/css/slider.css">
+    <link rel="stylesheet" type="text/css" href="assets/css/sampler.css">
 
-  <link rel="stylesheet" type="text/css" href="assets/css/slider.css">
-  <link rel="stylesheet" type="text/css" href="assets/css/sampler.css">
-  <!--<link rel="stylesheet" type="text/css" href="assets/css/numberInput.css">-->
+
+    <!--<link rel="stylesheet" type="text/css" href="assets/css/numberInput.css">-->
 
 </head>
 <body>
-  <h1>Domenyck's Sample Selector</h1>
-  <p class="subtitle">&#169; <a href="www.linkedin.com/in/dschweyer">Domenyck Schweyer</a></p>
-  <hr>
-  <div class="container">
+<h1>Domenyck's Sample Selector</h1>
+<p class="subtitle">&#169; <a href="www.linkedin.com/in/dschweyer">Domenyck Schweyer</a></p>
+<hr>
+<div class="container">
     <div class="explanation">
-      <p>This tool will determine the appropriate sample size for you based on the population, and then will
-        provide you with a file of that sample. This uses the <a href="https://www.qualitymag.com/articles/91991-sample-sizes-how-many-do-i-need">Zero Defect Sampling</a> methodology.</p>
+        <p>This tool will determine the appropriate sample size for you based on the population, and then will
+            provide you with a file of that sample. This uses the <a href="https://www.qualitymag.com/articles/91991-sample-sizes-how-many-do-i-need">Zero Defect Sampling</a> methodology.
+            Using this methodology, any deviations represent an exception to the control being tested. If any deviations are identified, the control
+            is not operating as designed.</p>
         <br>
-      </div>
+        <p>The The Bayes Success-Run Theorem (based on the binomial distribution) is one useful method that can be used
+            to determine an appropriate risk-based sample size for process validations:</p>
+        $$&#1012; = \text{Confidence}$$
+        $$&sigma; = \text{Maximum Tolerable Deviation}$$
+        $$n = \frac{ln(1 - &#1012;)}
+        {ln(1 - &sigma;)} $$
+        <br>
 
-      <div class="tool">
+        The size of the sample needs to be adjusted if the population is relatively small.
+        Populations are adjusted using the following formula:
+        $$n = \text{Full Sample Size}$$
+        $$N = \text{Population Size}$$
+        $$\text{Sample Size} = \frac{1 + n - 1}{N}$$
+        <br>
+        <p>The sample tool selects a sample using the formulas above. The random number generation is based on the
+            <a href="https://www.w3schools.com/js/js_random.asp">Math.random() function</a>:</p>
+        <code>
+            do {
+            var randNum = Math.round(Math.random() * populationSize);
+            } while(numbers.includes(randNum) || randNum == 0)
+        </code>
+    </div>
+
+    <div class="tool">
         <!-- Rectangular switch -->
         <label class="switch">
-          <input type="checkbox" onchange="toggleSwitch()">
-          <span class="slider"></span>
+            <input type="checkbox" onchange="toggleSwitch()">
+            <span class="slider"></span>
         </label>
         <form name="samplingTool" id="uploadFile" style="display:none">
-          <br>
-          <input type="file" name="select" value="Upload Population">
-          <br>
-          <input type="button" name="parse" value="Read File">
+            <br>
+            <input type="file" name="select" value="Upload Population">
+            <br>
+            <input type="button" name="parse" value="Read File">
         </form>
         <h2>Parameters</h2>
         <form name="samplingTool" id="samplingTool" autocomplete="off" onchange="sampleSize()">
-          <label for="population">Population Size:</label>
-          <input type="number" name="population" id="population" placeholder="Total Population Size" onclick="sampleSize()"required value="10">
-          <br>
-          <label for="confidence">Confidence:</label>
-          <input type="number" name="confidence" id="confidence" value="90" required min="75" max="99">
-          <br>
-          <label for="deviation">Tolerable Deviation Rate:</label>
-          <input type="number" name="deviation" id="deviation" value="5" required min="1" max="25">
-          <br>
-          <label for="sample">Sample Size:</label>
-          <input type="number" name="sample" id="sample" placeholder="Sample Size" readonly>
-          <br>
-          <input type="button" value="Generate" onclick="sampleSize();randomSamples()">
+            <label for="population">Population Size:</label>
+            <input type="number" name="population" id="population" placeholder="Total Population Size" onclick="sampleSize()"required value="10">
+            <br>
+            <label for="confidence">Confidence:</label>
+            <input type="number" name="confidence" id="confidence" value="90" required min="75" max="99">
+            <br>
+            <label for="deviation">Tolerable Deviation Rate:</label>
+            <input type="number" name="deviation" id="deviation" value="5" required min="1" max="25">
+            <br>
+            <label for="sample">Sample Size:</label>
+            <input type="number" name="sample" id="sample" placeholder="Sample Size" readonly>
+            <br>
+            <input type="button" value="Generate" onclick="sampleSize();randomSamples();generate()">
         </form>
         <br>
 
         <h2>List of Samples</h2>
         <table id="sampleTable">
-          <tr>
-            <th>Sample Number</th>
-          </tr>
+            <tr>
+                <th>Sample Number</th>
+            </tr>
         </table>
-      </div>
     </div>
+</div>
 
-  </body>
-  </html>
+</body>
+</html>

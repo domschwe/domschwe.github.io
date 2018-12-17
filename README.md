@@ -1,4 +1,4 @@
-# Welcome to Domenyck's Side Projects
+# Side Projects
 
 ## Sample Selector
 [Link](docs/Sampler.html)

@@ -19,3 +19,19 @@ generate = function()
 
     iframe.src = pdf.output('datauristring');
 };
+function makePdf() {
+    var doc = new jsPDF();
+    var specialElementHandlers = {
+        '#editor': function (element, renderer) {
+            return true;
+        }
+    };
+
+
+        doc.fromHTML(('#content').html(), 15, 15, {
+            'width': 170,
+            'elementHandlers': specialElementHandlers
+        });
+        doc.save('workpaper.pdf');
+}
+

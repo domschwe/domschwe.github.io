@@ -32,77 +32,80 @@ MathJax.Hub.Config({
 
 </head>
 <body>
-<h1>Domenyck's Sample Selector</h1>
-<p class="subtitle">&#169; <a href="www.linkedin.com/in/dschweyer">Domenyck Schweyer</a></p>
-<hr>
-<div class="container">
-    <div class="explanation">
-        <p>This tool will determine the appropriate sample size for you based on the population, and then will
-            provide you with a file of that sample. This uses the <a href="https://www.qualitymag.com/articles/91991-sample-sizes-how-many-do-i-need">Zero Defect Sampling</a> methodology.
-            Using this methodology, any deviations represent an exception to the control being tested. If any deviations are identified, the control
-            is not operating as designed.</p>
-        <br>
-        <p>The The Bayes Success-Run Theorem (based on the binomial distribution) is one useful method that can be used
-            to determine an appropriate risk-based sample size for process validations:</p>
-        $$&#1012; = \text{Confidence}$$
-        $$&sigma; = \text{Maximum Tolerable Deviation}$$
-        $$n = \frac{ln(1 - &#1012;)}
-        {ln(1 - &sigma;)} $$
-        <br>
+<div id="content">
+    <h1>Domenyck's Sample Selector</h1>
+    <p class="subtitle">&#169; <a href="www.linkedin.com/in/dschweyer">Domenyck Schweyer</a></p>
+    <hr>
+    <div class="container">
+        <div class="explanation">
+            <p>This tool will determine the appropriate sample size for you based on the population, and then will
+                provide you with a file of that sample. This uses the <a href="https://www.qualitymag.com/articles/91991-sample-sizes-how-many-do-i-need">Zero Defect Sampling</a> methodology.
+                Using this methodology, any deviations represent an exception to the control being tested. If any deviations are identified, the control
+                is not operating as designed.</p>
+            <br>
+            <p>The The Bayes Success-Run Theorem (based on the binomial distribution) is one useful method that can be used
+                to determine an appropriate risk-based sample size for process validations:</p>
+            $$&#1012; = \text{Confidence}$$
+            $$&sigma; = \text{Maximum Tolerable Deviation}$$
+            $$n = \frac{ln(1 - &#1012;)}
+            {ln(1 - &sigma;)} $$
+            <br>
 
-        The size of the sample needs to be adjusted if the population is relatively small.
-        Populations are adjusted using the following formula:
-        $$n = \text{Full Sample Size}$$
-        $$N = \text{Population Size}$$
-        $$\text{Sample Size} = \frac{1 + n - 1}{N}$$
-        <br>
-        <p>The sample tool selects a sample using the formulas above. The random number generation is based on the
-            <a href="https://www.w3schools.com/js/js_random.asp">Math.random() function</a>:</p>
-        <code>
-            do {
-            var randNum = Math.round(Math.random() * populationSize);
-            } while(numbers.includes(randNum) || randNum == 0)
-        </code>
-    </div>
+            The size of the sample needs to be adjusted if the population is relatively small.
+            Populations are adjusted using the following formula:
+            $$n = \text{Full Sample Size}$$
+            $$N = \text{Population Size}$$
+            $$\text{Sample Size} = \frac{1 + n - 1}{N}$$
+            <br>
+            <p>The sample tool selects a sample using the formulas above. The random number generation is based on the
+                <a href="https://www.w3schools.com/js/js_random.asp">Math.random() function</a>:</p>
+            <code>
+                do {
+                var randNum = Math.round(Math.random() * populationSize);
+                } while(numbers.includes(randNum) || randNum == 0)
+            </code>
+        </div>
 
-    <div class="tool">
-        <!-- Rectangular switch -->
-        <label class="switch">
-            <input type="checkbox" onchange="toggleSwitch()">
-            <span class="slider"></span>
-        </label>
-        <form name="samplingTool" id="uploadFile" style="display:none">
+        <div class="tool">
+            <!-- Rectangular switch -->
+            <label class="switch">
+                <input type="checkbox" onchange="toggleSwitch()">
+                <span class="slider"></span>
+            </label>
+            <form name="samplingTool" id="uploadFile" style="display:none">
+                <br>
+                <input type="file" name="select" value="Upload Population">
+                <br>
+                <input type="button" name="parse" value="Read File">
+            </form>
+            <h2>Parameters</h2>
+            <form name="samplingTool" id="samplingTool" autocomplete="off" onchange="sampleSize()">
+                <label for="population">Population Size:</label>
+                <input type="number" name="population" id="population" placeholder="Total Population Size" onclick="sampleSize()"required>
+                <br>
+                <label for="confidence">Confidence:</label>
+                <input type="number" name="confidence" id="confidence" value="90" required min="75" max="99">
+                <br>
+                <label for="deviation">TMaximum Tolerable Deviation:</label>
+                <input type="number" name="deviation" id="deviation" value="5" required min="1" max="25">
+                <br>
+                <label for="sample">Sample Size:</label>
+                <input type="number" name="sample" id="sample" placeholder="Sample Size" readonly>
+                <br>
+                <input type="button" value="Generate" onclick="sampleSize();randomSamples();makePdf()">
+            </form>
             <br>
-            <input type="file" name="select" value="Upload Population">
-            <br>
-            <input type="button" name="parse" value="Read File">
-        </form>
-        <h2>Parameters</h2>
-        <form name="samplingTool" id="samplingTool" autocomplete="off" onchange="sampleSize()">
-            <label for="population">Population Size:</label>
-            <input type="number" name="population" id="population" placeholder="Total Population Size" onclick="sampleSize()"required value="10">
-            <br>
-            <label for="confidence">Confidence:</label>
-            <input type="number" name="confidence" id="confidence" value="90" required min="75" max="99">
-            <br>
-            <label for="deviation">Tolerable Deviation Rate:</label>
-            <input type="number" name="deviation" id="deviation" value="5" required min="1" max="25">
-            <br>
-            <label for="sample">Sample Size:</label>
-            <input type="number" name="sample" id="sample" placeholder="Sample Size" readonly>
-            <br>
-            <input type="button" value="Generate" onclick="sampleSize();randomSamples();generate()">
-        </form>
-        <br>
 
-        <h2>List of Samples</h2>
-        <table id="sampleTable">
-            <tr>
-                <th>Sample Number</th>
-            </tr>
-        </table>
+            <div id="sampleSection" style="display:none">
+                <h2>List of Samples</h2>
+                <table id="sampleTable">
+                    <tr>
+                        <th>Sample Number</th>
+                    </tr>
+                </table>
+            </div>
+        </div>
     </div>
 </div>
-
 </body>
 </html>

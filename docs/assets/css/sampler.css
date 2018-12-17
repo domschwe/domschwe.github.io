@@ -2,6 +2,12 @@ body {
     margin: 100px;
 }
 
+code {
+    background-color: #eee;
+    border: 1px solid #999;
+    display: block;
+    padding: 20px;
+}
 .subtitle {
   font-style: italic;
   font-weight: lighter;
@@ -35,7 +41,9 @@ input:required:valid {
   background-color: green;
   color: white;
 }
-
+::placeholder {
+    color: white;
+}
 input {
   font-weight: bold;
 }

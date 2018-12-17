@@ -4,6 +4,8 @@ function randomSamples(){
   let sampleTable = document.getElementById("sampleTable");
   let populationSize = document.forms["samplingTool"]["population"].value;
 
+  document.getElementById("sampleSection").style.display = "block";
+
   console.log("Clear table with " + sampleTable.rows.length + " rows");
   while (sampleTable.rows.length > 1) {
     sampleTable.deleteRow(1);

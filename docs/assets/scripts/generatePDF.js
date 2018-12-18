@@ -17,7 +17,8 @@ function print(quality = 3) {
     const filename  = 'Sample Selection.pdf';
 
     html2canvas(document.querySelector('#content'),
-        {scale: quality}
+        {scale: quality,
+        y: 1250px}
     ).then(canvas => {
         let pdf = new jsPDF('p', 'mm');
         pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, 210, 297);

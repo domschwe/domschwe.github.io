@@ -44,4 +44,4 @@ function exportToCsv(filename, rows) {
     }
   }
 
-};
+}

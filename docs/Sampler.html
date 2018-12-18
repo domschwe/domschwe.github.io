@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Sample Selector</title>
-    <script src="assets/scripts/jquery-3.3.1.min.js"></script>
+    <script lang="text/javascript" src="assets/scripts/jquery-3.3.1.min.js"></script>
     <script lang="text/javascript" src="https://combinatronics.com/SheetJS/js-xlsx/master/dist/xlsx.full.min.js" id="xlsxScript"></script>
     <script lang="text/javascript" src="assets/scripts/sampleSize.js"></script>
     <script lang="text/javascript" src="assets/scripts/numberInput.js"></script>
@@ -11,6 +11,8 @@
     <script lang="text/javascript" src="assets/scripts/randomSamples.js"></script>
     <script lang="text/javascript" src="assets/scripts/toggleSwitch.js"></script>
     <script lang="text/javascript" src="assets/scripts/jspdf.min.js"></script>
+    <script lang="text/javascript" src="assets/scripts/generatePDF.js"></script>
+    <script lang="text/javascript" src="assets/scripts/html2canvas.min.js"></script>
     <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML'></script>
 
     <script type="text/javascript"
@@ -86,16 +88,18 @@ MathJax.Hub.Config({
                 <label for="confidence">Confidence:</label>
                 <input type="number" name="confidence" id="confidence" value="90" required min="75" max="99">
                 <br>
-                <label for="deviation">TMaximum Tolerable Deviation:</label>
+                <label for="deviation">Maximum Tolerable Deviation:</label>
                 <input type="number" name="deviation" id="deviation" value="5" required min="1" max="25">
                 <br>
                 <label for="sample">Sample Size:</label>
                 <input type="number" name="sample" id="sample" placeholder="Sample Size" readonly>
                 <br>
-                <input type="button" value="Generate" onclick="sampleSize();randomSamples();makePdf()">
+                <input type="button" value="Generate" id="generate" onclick="sampleSize();randomSamples()">
             </form>
             <br>
 
+            <p id='generationDate'>Date</p>
+            <br>
             <div id="sampleSection" style="display:none">
                 <h2>List of Samples</h2>
                 <table id="sampleTable">

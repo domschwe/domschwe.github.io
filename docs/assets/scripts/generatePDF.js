@@ -1,37 +1,27 @@
-generate = function()
-{
-    var pdf = new jsPDF('p', 'pt', 'a4');
-    pdf.setFontSize(18);
-    pdf.fromHTML(document.getElementById('html-2-pdfwrapper'),
-        margins.left, // x coord
-        margins.top,
-        {
-            // y coord
-            width: margins.width// max width of content on PDF
-        },function(dispose) {
-            headerFooterFormatting(pdf)
-        },
-        margins);
+//const doc = new jsPDF();
+//let button = document.getElementById('generate');
+//button.addEventListener('click', makePdf);
 
-    var iframe = document.createElement('iframe');
-    iframe.setAttribute('style','position:absolute;right:0; top:0; bottom:0; height:100%; width:650px; padding:20px;');
-    document.body.appendChild(iframe);
-
-    iframe.src = pdf.output('datauristring');
-};
 function makePdf() {
-    var doc = new jsPDF();
-    var specialElementHandlers = {
-        '#editor': function (element, renderer) {
-            return true;
-        }
-    };
+    const filename  = 'Sample Selection.pdf';
+    let pdf = new jsPDF();
+    const pageText = document.querySelector('#content').html();
+    pdf.setFontSize(11);
+    pdf.fromHTML(pageText);
+    pdf.save(filename);
+}
 
+// Credit to https://itnext.io/javascript-convert-html-css-to-pdf-print-supported-very-sharp-and-not-blurry-c5ffe441eb5e
+// This one lets you improve the PDF sharpness by scaling up the HTML node tree to render as an image before getting pasted on the PDF.
+function print(quality = 3) {
+    const filename  = 'Sample Selection.pdf';
 
-        doc.fromHTML(('#content').html(), 15, 15, {
-            'width': 170,
-            'elementHandlers': specialElementHandlers
-        });
-        doc.save('workpaper.pdf');
+    html2canvas(document.querySelector('#content'),
+        {scale: quality}
+    ).then(canvas => {
+        let pdf = new jsPDF('p', 'mm');
+        pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, 210, 297);
+        pdf.save(filename);
+    });
 }
 

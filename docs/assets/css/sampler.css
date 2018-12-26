@@ -14,15 +14,16 @@ code {
 }
 
 .container {
-  display: flex;
-  flex-direction: row-reverse;
-  justify-content: flex-end;
+  display: grid;
+    justify-content: left;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+
 }
 
 .tool {
   display: flex;
   flex-direction: column;
-  width: 450px;
+  /*width: 450px;*/
   border-right: 6px solid black;
   margin-right: 10px;
   padding-right: 10px;
